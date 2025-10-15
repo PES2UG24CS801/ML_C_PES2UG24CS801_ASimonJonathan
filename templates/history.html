@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Prediction History</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <!-- Navbar Section -->
+  <div class="navbar">
+    <div class="logo">MovieAI</div>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/predict">Predict</a>
+      <a href="/history" class="active">History</a>
+    </div>
+  </div>
+
+  <div class="container history-container">
+    <h2>Prediction History</h2>
+    {% if error %}
+    <p class="error-message">{{ error }}</p>
+    {% endif %}
+    {% if history %}
+    <div class="history-list">
+      {% for item in history %}
+      <div class="history-item">
+        <img src="{{ url_for('static', filename='uploads/' + item.image_filename) }}" alt="Poster">
+        <ul>
+          {% for i in range(item.genres|length) %}
+          <li>{{ item.genres[i] }} - {{ item.confidences[i] }}%</li>
+          {% endfor %}
+        </ul>
+        <p>Predicted on: {{ item.timestamp }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p>No predictions yet. Upload a poster to get started!</p>
+    {% endif %}
+    <a href="/predict" class="back-button">Upload Another Poster</a>
+  </div>
+</body>
+</html>

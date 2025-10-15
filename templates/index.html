@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Movie Genre Prediction</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <!-- Navbar Section -->
+  <div class="navbar">
+    <div class="logo">MovieAI</div>
+    <div class="nav-links">
+      <a href="/" class="active">Home</a>
+      <a href="/predict">Predict</a>
+      <a href="/history">History</a>
+    </div>
+  </div>
+
+  <!-- Hero / Main Section -->
+  <section class="container">
+    <h1>Movie Genre Classifier</h1>
+    <p>
+      Upload a movie poster and let our AI predict the genres for you! Powered by PyTorch and trained on a large movie dataset.
+    </p>
+    <a href="/predict">
+      <button>Start Predicting</button>
+    </a>
+  </section>
+  <section class="ProbState">
+    <h3>Problem Statement</h3>
+    <p>
+      The need for online streaming platforms and digital movie databases has made it increasingly important to automatically categorize movies into their respective genres. 
+      Movie posters serve as the first point of contact for viewers and often convey essential information about the film’s style, tone, and content. 
+      Predicting genres directly from poster images can help recommendation systems, streaming services, and viewers quickly identify movies of interest, providing a foundation for content organization and discovery.
+      This project focuses on multi-label movie genre prediction from poster images, where a single movie may belong to multiple genres simultaneously, such as action and comedy. 
+      The task is challenging because posters vary widely in design, color, composition, and artistic style, and the relationship between visual elements and genres is often subtle. 
+      To tackle this problem, we leverage publicly available datasets such as IMDb, which provide movie metadata, including genre labels and poster URLs. 
+      Poster images are preprocessed by resizing, normalization, and transformation into a format suitable for deep learning models. 
+      The core of the approach is building multi-label convolutional neural networks using transfer learning with architectures like ResNet and VGG, which have been pretrained on large-scale image datasets. 
+      These models are fine-tuned to extract features relevant for genre classification.
+      Since a movie can belong to multiple genres, the output layer uses sigmoid activations, and the model is trained using binary cross-entropy loss to handle multi-label outputs. 
+      Evaluation is performed using metrics such as precision, recall, and average AUC per genre, which provide insights into the performance across different categories. 
+      Additionally, data augmentation techniques like random flips, rotation, and color jittering are employed to improve the robustness of the model against variations in poster images.
+    </p>
+  </section>
+</body>
+</html>

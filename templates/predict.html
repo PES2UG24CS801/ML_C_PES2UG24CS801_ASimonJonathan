@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Upload Poster</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script>
+    function showLoading() {
+      document.getElementById("upload-form").style.display = "none";
+      document.getElementById("loading").style.display = "block";
+    }
+
+    // Preview the dropped or selected image
+    function previewImage(file) {
+      const preview = document.getElementById("image-preview");
+      preview.style.display = "block";
+      preview.src = URL.createObjectURL(file);
+    }
+
+    // Handle drag-and-drop
+    document.addEventListener("DOMContentLoaded", () => {
+      const dropZone = document.getElementById("drop-zone");
+      const fileInput = document.getElementById("poster");
+
+      dropZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropZone.classList.add("dragover");
+      });
+
+      dropZone.addEventListener("dragleave", () => {
+        dropZone.classList.remove("dragover");
+      });
+
+      dropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropZone.classList.remove("dragover");
+        const files = e.dataTransfer.files;
+        if (files.length > 0 && files[0].type.startsWith("image/")) {
+          fileInput.files = files;
+          previewImage(files[0]);
+        } else {
+          alert("Please drop an image file!");
+        }
+      });
+
+      dropZone.addEventListener("click", () => {
+        fileInput.click();
+      });
+
+      fileInput.addEventListener("change", () => {
+        if (fileInput.files.length > 0) {
+          previewImage(fileInput.files[0]);
+        }
+      });
+    });
+  </script>
+</head>
+<body>
+  <!-- Navbar Section -->
+  <div class="navbar">
+    <div class="logo">MovieAI</div>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/predict" class="active">Predict</a>
+      <a href="/history">History</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>Upload Your Movie Poster</h1>
+    <div class="upload-section">
+      {% if error %}
+      <p class="error-message">{{ error }}</p>
+      {% endif %}
+      <form id="upload-form" action="/predict_result" method="post" enctype="multipart/form-data" onsubmit="showLoading()">
+        <div id="drop-zone" class="drop-zone">
+          <p>Drag & Drop Your Poster Here or Click to Upload</p>
+          <input type="file" id="poster" name="poster" accept="image/*" required>
+        </div>
+        <img id="image-preview" class="image-preview" style="display:none;" alt="Selected Poster Preview">
+        <button type="submit">Predict Genre</button>
+      </form>
+      <div id="loading" class="loading" style="display:none;">
+        <img src="{{ url_for('static', filename='loading.gif') }}" width="100px" alt="Loading Animation"><br>
+        Predicting genres...
+      </div>
+    </div>
+  </div>
+</body>
+</html>

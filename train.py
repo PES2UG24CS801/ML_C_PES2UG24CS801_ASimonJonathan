@@ -8,6 +8,8 @@ import torchvision.transforms as transforms
 import torch.nn as nn
 import torch.optim as optim
 from torchvision import models
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+import numpy as np
 
 # -------------------
 # CONFIG
@@ -28,7 +30,7 @@ class MovieGenreDataset(Dataset):
         self.img_dir = img_dir
         self.transform = transform
 
-        # Make genres list
+        # Handle missing and split genres
         self.data['Genre'] = self.data['Genre'].fillna("").apply(lambda x: x.split('|'))
         all_genres = sorted(set(g for sublist in self.data['Genre'] for g in sublist if g))
         self.genres = all_genres
@@ -36,7 +38,7 @@ class MovieGenreDataset(Dataset):
         # Map genre to index
         self.genre_to_idx = {g: i for i, g in enumerate(self.genres)}
 
-        # Only keep rows where image exists
+        # Filter for existing images only
         self.data['filename'] = self.data['imdbId'].astype(str) + ".jpg"
         self.data = self.data[self.data['filename'].apply(lambda x: os.path.exists(os.path.join(img_dir, x)))].reset_index(drop=True)
         if len(self.data) == 0:
@@ -74,7 +76,7 @@ transform = transforms.Compose([
 dataset = MovieGenreDataset(CSV_FILE, IMG_DIR, transform=transform)
 train_loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
 
-print(f"🚀 Starting training on {len(dataset)} samples with {len(dataset.genres)} genres...")
+print(f"Starting training on {len(dataset)} samples with {len(dataset.genres)} genres...")
 
 # -------------------
 # MODEL
@@ -91,20 +93,38 @@ optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 # -------------------
 for epoch in range(EPOCHS):
     model.train()
-    running_loss = 0.0
-    for images, labels in train_loader:
-        images, labels = images.to(DEVICE), labels.to(DEVICE)
+    total_loss = 0
+    all_labels = []
+    all_preds = []
 
+    for images, labels in train_loader:
+        images, labels = images.to(DEVICE), labels.to(DEVICE).float()
         optimizer.zero_grad()
         outputs = model(images)
         loss = criterion(outputs, labels)
         loss.backward()
         optimizer.step()
+        total_loss += loss.item() * images.size(0)
 
-        running_loss += loss.item() * images.size(0)
+        # Convert outputs to binary predictions
+        preds = torch.sigmoid(outputs).detach().cpu().numpy()
+        preds = (preds > 0.5).astype(int)
+        all_preds.append(preds)
+        all_labels.append(labels.cpu().numpy())
 
-    epoch_loss = running_loss / len(dataset)
-    print(f"Epoch [{epoch+1}/{EPOCHS}] | Loss: {epoch_loss:.4f}")
+    # Combine all predictions and labels
+    all_preds = np.vstack(all_preds)
+    all_labels = np.vstack(all_labels)
+
+    # Compute metrics
+    acc = accuracy_score(all_labels, all_preds)
+    precision = precision_score(all_labels, all_preds, average='micro', zero_division=0)
+    recall = recall_score(all_labels, all_preds, average='micro', zero_division=0)
+    f1 = f1_score(all_labels, all_preds, average='micro', zero_division=0)
+
+    print(f"Epoch [{epoch+1}/{EPOCHS}] | "
+          f"Loss: {total_loss/len(dataset):.4f} | "
+          f"Acc: {acc:.4f} | Prec: {precision:.4f} | Recall: {recall:.4f} | F1: {f1:.4f}")
 
 # -------------------
 # SAVE MODEL & GENRES
@@ -114,4 +134,5 @@ with open("genres.txt", "w", encoding="utf8") as f:
     for g in dataset.genres:
         f.write(g + "\n")
 
-print("✅ Training complete! Model and genres saved.")
+print("\n✅ Training complete! Model and genres saved successfully.")
+print(f"📊 Final Metrics -> Accuracy: {acc:.4f}, Precision: {precision:.4f}, Recall: {recall:.4f}, F1: {f1:.4f}")

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Prediction Result</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <!-- Navbar Section -->
+  <div class="navbar">
+    <div class="logo">MovieAI</div>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/predict" class="active">Predict</a>
+      <a href="/history">History</a>
+    </div>
+  </div>
+
+  <div class="container result-container">
+    <h2>Predicted Genres</h2>
+    <div class="result-content">
+      <!-- Image Preview -->
+      {% if image_filename %}
+      <div class="poster-preview">
+        <img src="{{ url_for('static', filename='uploads/' + image_filename) }}" alt="Uploaded Movie Poster" class="result-image">
+      </div>
+      {% endif %}
+      <!-- Genre List -->
+      <div class="genre-list">
+        <ul>
+          {% for i in range(genres|length) %}
+            <li>{{ genres[i] }} - {{ confidences[i] }}%</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    <a href="/predict" class="back-button">Upload Another Poster</a>
+  </div>
+</body>
+</html>

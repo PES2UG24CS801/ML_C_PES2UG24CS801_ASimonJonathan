@@ -1,0 +1,66 @@
+[
+  {
+    "image_filename": "1760512613_2461.jpg",
+    "genres": [
+      "Drama"
+    ],
+    "confidences": [
+      99.75
+    ],
+    "timestamp": "2025-10-15 12:46:53"
+  },
+  {
+    "image_filename": "1760512626_2795.jpg",
+    "genres": [
+      "Drama",
+      "Romance",
+      "Short"
+    ],
+    "confidences": [
+      96.1,
+      96.76,
+      59.73
+    ],
+    "timestamp": "2025-10-15 12:47:07"
+  },
+  {
+    "image_filename": "1760512674_3165.jpg",
+    "genres": [
+      "Crime",
+      "Drama",
+      "Mystery"
+    ],
+    "confidences": [
+      95.41,
+      97.28,
+      91.66
+    ],
+    "timestamp": "2025-10-15 12:47:55"
+  },
+  {
+    "image_filename": "1760512700_3016.jpg",
+    "genres": [
+      "Drama",
+      "Short"
+    ],
+    "confidences": [
+      78.73,
+      88.44
+    ],
+    "timestamp": "2025-10-15 12:48:20"
+  },
+  {
+    "image_filename": "1760512916_2795.jpg",
+    "genres": [
+      "Drama",
+      "Romance",
+      "Short"
+    ],
+    "confidences": [
+      96.1,
+      96.76,
+      59.73
+    ],
+    "timestamp": "2025-10-15 12:51:57"
+  }
+]
